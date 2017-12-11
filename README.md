@@ -1,4 +1,3 @@
-
 #GPIO 
 
 ##Usage
@@ -26,7 +25,7 @@
     $gpio->port(13)->direction('in');
     
     $value = $gpio->port(13)->get();
-U can also use the buffer in the port requests ´GPIO::GPIO_USE_BUFFER´
+U can also use the buffer in the port requests GPIO::GPIO_USE_BUFFER
 
 
 ##Link
