@@ -1,0 +1,16 @@
+{
+	"keywords" : [
+		"gpio",
+		"php"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"GPIO\\GPIO\\" : "src"
+		}
+	},
+	"name" : "GPIO/GPIO",
+	"description" : "php gpio handler",
+	"require" : {
+		"php" : ">=7.1"
+	}
+}
