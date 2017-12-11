@@ -1,9 +1,10 @@
-#GPIO 
+# GPIO 
 
-##Usage
+## Usage
 
 * Use the System functions like:
 
+```php
     <?php
     
     use \GPIO\GPIO\Kernel;
@@ -13,9 +14,10 @@
     Sysfs::direction(13,'in');
     
     $value = Sysfs::value(13);
-    
+```   
 * GPIO Interface:
 
+```php
     <?php
     
     use \GPIO;
@@ -25,10 +27,11 @@
     $gpio->port(13)->direction('in');
     
     $value = $gpio->port(13)->get();
-U can also use the buffer in the port requests GPIO::GPIO_USE_BUFFER
+```
+U can also use the buffer in the port requests `GPIO::GPIO_USE_BUFFER`
 
 
-##Link
+## Link
 
 Documentation: [kernel.org](https://www.kernel.org/doc/Documentation/gpio/sysfs.txt "kernel.org")
 
