@@ -16,4 +16,16 @@ class Sysfs {
 		
 	}
 	
+	static public function value($port) {
+	    
+	}
+	
+	static public function edge() {
+	    
+	}
+	
+	static public function active_low() {
+	    
+	}
+	
 }
