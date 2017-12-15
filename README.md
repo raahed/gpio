@@ -30,7 +30,20 @@
 ```
 U can also use the buffer in the port requests `GPIO::GPIO_USE_BUFFER`
 
+##Autoloader
 
+* Run the GPIO Library with the Autoloader. (Singleton instance)
+
+```php
+	<?php
+	
+	include 'pathtogpio/Autoloader.php';
+	
+	\GPIO\Autoloader::instance()->setup(__DIR__);
+	
+	[...]
+	
+```
 ## Link
 
 Documentation: [kernel.org](https://www.kernel.org/doc/Documentation/gpio/sysfs.txt "kernel.org")
