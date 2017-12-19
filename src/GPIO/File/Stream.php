@@ -42,7 +42,7 @@ class Stream {
 	    
 	}
 	
-	public function open($context,$flags) {
+	public function open($context,$flags = 000) {
 	    
 	    if(!$context) {
 	        
