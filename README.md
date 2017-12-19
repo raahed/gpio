@@ -30,7 +30,7 @@
 ```
 U can also use the buffer in the port requests `GPIO::GPIO_USE_BUFFER`
 
-##Autoloader
+## Autoloader
 
 * Run the GPIO Library with the Autoloader. (Singleton instance)
 
@@ -48,5 +48,8 @@ U can also use the buffer in the port requests `GPIO::GPIO_USE_BUFFER`
 
 Documentation: [kernel.org](https://www.kernel.org/doc/Documentation/gpio/sysfs.txt "kernel.org")
 
+--
+ 
+Tested with raspbian stretch lite on raspberrypi zero w (2017) 
 
 v0.0
