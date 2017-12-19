@@ -2,7 +2,7 @@
 
 namespace GPIO\Kernel;
 
-class Sysfs {
+class Sysfs extends Chip {
 	
 	static public function export($port) {
 		
