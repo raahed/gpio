@@ -4,7 +4,7 @@ namespace \GPIO\File;
 
 class Stream {
 	
-	public const FLAG_STREAM_RULE = 100;
+	public const FLAG_STREAM_WRITE = 100;
 	
 	public const FLAG_STREAM_READ = 010;
 	
@@ -58,6 +58,10 @@ class Stream {
 	        
 	        $this->mode = 'r';
 	        
+	    } elseif($flags & self::FLAG_STREAM_WRITE) {
+	        
+	        $this->mode = 'w';
+	        
 	    } else {
 	        
 	        $this->mode = 'w+';
@@ -108,17 +112,25 @@ class Stream {
 	    
 	}
 	
-	public function read() {
+	public function read($close = false) {
 	    
 	    if($this->stream) {
 	        
-	        return fread($this->stream);
+	        $buffer = fread($this->stream);
+	        
+	        if($close == true) {
+	            
+	            $this->close;
+	            
+	        }
+	        
+	        return $buffer;
 	    
 	    }	 
 	    
 	}
 	
-	public function write($content = '') {
+	public function write($content = '', $close = false) {
 	    
 	    if($this->stream) {
 	        
@@ -129,6 +141,12 @@ class Stream {
 	        }
 	        
 	        fwrite($this->stream,$content);
+	        
+	        if($close == true) {
+	            
+	            $this->close();
+	            
+	        }
 	        
 	    }
 	    
