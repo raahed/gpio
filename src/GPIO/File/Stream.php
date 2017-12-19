@@ -46,7 +46,7 @@ class Stream {
 	    
 	    if(!$context) {
 	        
-	        throw new \GPIO\Exceptions\FileException("Missing context in file stream.");
+	        throw new \GPIO\Exception\FileException("Missing context in file stream.");
 	        
 	    }
 	    
@@ -79,7 +79,7 @@ class Stream {
 	        
 	    } catch(Exception $e) {
 	        
-	        throw new \GPIO\Exceptions\FileException("Open stream context failed: ".$e->getMessage());
+	        throw new \GPIO\Exception\FileException("Open stream context failed: ".$e->getMessage());
 	        
 	    }
 	    
@@ -120,7 +120,7 @@ class Stream {
 	        
 	        if($this->mode == 'r') {
 	            
-	            throw new \GPIO\Exceptions\FileException("Try to write something to a read-only stream.");
+	            throw new \GPIO\Exception\FileException("Try to write something to a read-only stream.");
 	            
 	        }
 	        
