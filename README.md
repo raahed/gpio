@@ -7,8 +7,6 @@
 ```php
     <?php
     
-    use \GPIO\GPIO\Kernel;
-    
     Sysfs::export(13);
     
     Sysfs::direction(13,'in');
@@ -19,8 +17,6 @@
 
 ```php
     <?php
-    
-    use \GPIO;
     
     $gpio = new GPIO();
     
