@@ -18,7 +18,11 @@ class Stream {
 	
 	public function __construct($context,$flags) {
 	    
-	    $this->open($context,$flags);
+	    if($context) {
+	        
+	        $this->open($context,$flags);
+	    
+	    }
 	    
 	}
 	
