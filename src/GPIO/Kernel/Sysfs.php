@@ -6,6 +6,10 @@ class Sysfs extends Chip {
 	
 	static public function export($port) {
 		
+		$stream = new \GPIO\File\Stream('export');
+		
+		$stream->write($port, true);
+		
 	}
 	
 	static public function unexport($port) {
