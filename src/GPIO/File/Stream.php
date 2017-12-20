@@ -1,14 +1,16 @@
 <?php 
 
-namespace \GPIO\File;
+namespace GPIO\File;
+
+use GPIO\Exception\FileException;
 
 class Stream {
 	
-	public const FLAG_STREAM_WRITE = 100;
+	const FLAG_STREAM_WRITE = 100;
 	
-	public const FLAG_STREAM_READ = 010;
+	const FLAG_STREAM_READ = 010;
 	
-	public const FLAG_STREAM_PERM = 001;
+	const FLAG_STREAM_PERM = 001;
 	
 	protected $base = '/sys/class/gpio';
 	
@@ -40,7 +42,7 @@ class Stream {
 	    
 	    if($this->stream) {
 	     
-	        return $this->read();
+	        return $this->read(true);
 	        
 	    }
 	    
@@ -50,7 +52,7 @@ class Stream {
 	    
 	    if(!$context) {
 	        
-	        throw new \GPIO\Exception\FileException("Missing context in file stream.");
+	        throw new FileException("Missing context in file stream.");
 	        
 	    }
 	    
@@ -85,9 +87,9 @@ class Stream {
 	         */
 	        $this->stream = fopen($file,$this->mode,false);
 	        
-	    } catch(Exception $e) {
+	    } catch(\Exception $e) {
 	        
-	        throw new \GPIO\Exception\FileException("Open stream context failed: ".$e->getMessage());
+	        throw new FileException("Open stream context failed: ".$e->getMessage());
 	        
 	    }
 	    

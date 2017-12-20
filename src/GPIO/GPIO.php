@@ -1,14 +1,18 @@
 <?php
 
-namespace \GPIO;
+namespace GPIO;
 
-class GPIO extends Kernel\Sysfs {
+use GPIO\Kernel\Sysfs;
+use GPIO\Kernel\Chip;
+use GPIO\IO\Port;
+
+class GPIO extends Sysfs {
 	
-	public const FLAG_GPIO_USE_BUFFER = 001;
+	const FLAG_GPIO_USE_BUFFER = 001;
 	
-	public const FLAG_GPIO_RESET_PORT = 010;
+	const FLAG_GPIO_RESET_PORT = 010;
 	
-	public const FLAG_GPIO_SKIP_EMPTY = 100;
+	const FLAG_GPIO_SKIP_EMPTY = 100;
 	
 	protected $ports = [];
 	
@@ -20,7 +24,7 @@ class GPIO extends Kernel\Sysfs {
 		
 		if(!$this->ports[$pin]) {
 			
-			$this->ports[$pin] = new \GPIO\IO\Port($pin);
+			$this->ports[$pin] = new Port($pin);
 			
 		}
 		
@@ -30,7 +34,7 @@ class GPIO extends Kernel\Sysfs {
 	
 	public function crawl($flags) {
 	    
-	    $gpios = Kernel\Chip::ngpio();
+	    $gpios = Chip::ngpio();
 	    
 	    $i = 0;
 	    

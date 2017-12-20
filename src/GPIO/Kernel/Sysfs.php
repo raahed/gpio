@@ -2,6 +2,8 @@
 
 namespace GPIO\Kernel;
 
+use GPIO\File\Stream;
+
 class Sysfs extends Chip {
 	
 	static public function export($port) {
@@ -12,7 +14,7 @@ class Sysfs extends Chip {
             
         }
         
-		$stream = new \GPIO\File\Stream('export', \GPIO\File\Stream::FLAG_STREAM_WRITE);
+		$stream = new Stream('export', Stream::FLAG_STREAM_WRITE);
 		
 		$stream->write($port, true);
 	
@@ -26,7 +28,7 @@ class Sysfs extends Chip {
             
         }
 
-		$stream = new \GPIO\File\Stream('unexport', \GPIO\File\Stream::FLAG_STREAM_WRITE);
+		$stream = new Stream('unexport', Stream::FLAG_STREAM_WRITE);
 		
 		$stream->write($port, true);
 	
@@ -40,7 +42,7 @@ class Sysfs extends Chip {
             
         }
 
-		$stream = new \GPIO\File\Stream('gpio'.$port.'/direction', \GPIO\File\Stream::FLAG_STREAM_WRITE);
+		$stream = new Stream('gpio'.$port.'/direction', Stream::FLAG_STREAM_WRITE);
 		
 		$stream->write($value, true);
 		
@@ -58,14 +60,14 @@ class Sysfs extends Chip {
 
         if($value) {
             
-            $stream = new \GPIO\File\Stream('gpio'.$port.'/value', \GPIO\File\Stream::FLAG_STREAM_WRITE);
+            $stream = new Stream('gpio'.$port.'/value', Stream::FLAG_STREAM_WRITE);
 		
 		    $stream->write($value,true);	  
             
             
         } else {
             
-            $stream = new \GPIO\File\Stream('gpio'.$port.'/value', \GPIO\File\Stream::FLAG_STREAM_READ);
+            $stream = new Stream('gpio'.$port.'/value', Stream::FLAG_STREAM_READ);
 		
 		    return $stream->read(true);	  
             

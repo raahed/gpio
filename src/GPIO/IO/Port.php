@@ -1,6 +1,9 @@
 <?php 
 
-namespace \GPIO\IO;
+namespace GPIO\IO;
+
+use GPIO\Exception\IOException;
+use GPIO\Kernel\Sysfs;
 
 class Port {
 	
@@ -20,17 +23,17 @@ class Port {
 		
 		if($value != 'in' && $value != 'out') {
 			
-			throw new \GPIO\Exception\IOException("");
+			throw new IOException("");
 			
 		}
 		
 		$this->direction= $value;
 		
-		\GPIO\Kernel\Sysfs::direction($value);
+		Sysfs::direction($value);
 		
 	}
 	
-	public function unset() {
+	public function reset() {
 		
 	}
 	

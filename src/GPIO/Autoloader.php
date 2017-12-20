@@ -34,7 +34,7 @@ class Autoloader {
 	/**
 	 * Here lives the singleton instance.
 	 * 
-	 * @var instance
+	 * @var  Autoloader
 	 */
 	private static $instance = null;
 	
@@ -42,7 +42,7 @@ class Autoloader {
 	 * Setup the autoloader and 
 	 * register the function.
 	 * 
-	 * @param system $dir
+	 * @param string $dir
 	 */
 	public function setup($dir = __DIR__) {
 		
@@ -77,7 +77,7 @@ class Autoloader {
 		
 		if(!file_exists($filename) || !$filename) {
 			
-			throw new ErrorException("Cant load class with the name: ".$class);
+			throw new Exception("Cant load class with the name: ".$class);
 			
 		}
 		
@@ -117,7 +117,7 @@ class Autoloader {
 	/**
 	 * The final function returns the singleton instance.
 	 * 
-	 * @return instance
+	 * @return object
 	 */
 	public static final function instance() {
 		

@@ -12,5 +12,11 @@
 	"description" : "php gpio handler",
 	"require" : {
 		"php" : ">=7.1"
-	}
+	},
+	"authors" : [{
+			"name" : "raah",
+			"email" : "fettemarvin@gmail.com",
+			"homepage" : "raah.me"
+		}
+	]
 }

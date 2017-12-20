@@ -1,6 +1,6 @@
 <?php
 
-namespace \GPIO\Kernel;
+namespace GPIO\Kernel;
 
 class Chip {
 

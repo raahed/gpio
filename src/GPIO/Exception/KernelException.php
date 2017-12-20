@@ -1,6 +1,6 @@
 <?php 
 
-namespace \GPIO\Exception;
+namespace GPIO\Exception;
 
 class KernelException extends \Exception {
 	
