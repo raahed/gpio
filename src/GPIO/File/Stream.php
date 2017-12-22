@@ -55,7 +55,7 @@ class Stream {
 	        throw new FileException("Missing context in file stream.");
 	        
 	    }
-	    
+	   	    
 	    if($flags & self::FLAG_STREAM_READ) {
 	        
 	        $this->mode = 'r';

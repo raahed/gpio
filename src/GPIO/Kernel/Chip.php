@@ -98,6 +98,8 @@ class Chip {
             
         }
         
+        $stream->close();
+        
     }
     
     static public function unsetChip() {
