@@ -108,7 +108,7 @@ class Autoloader {
 		
 		$file = str_replace('\\', '/', $class);
 		
-		return $this->dir.PATH_SEPARATOR.$file;
+		return $this->dir.'/'.$file;
 		
 		
 		
@@ -119,7 +119,7 @@ class Autoloader {
 	 * 
 	 * @return object
 	 */
-	public static final function instance() {
+	static public final function instance() {
 		
 		if(!self::$instance) {
 			

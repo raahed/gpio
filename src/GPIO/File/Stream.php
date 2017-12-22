@@ -6,11 +6,13 @@ use GPIO\Exception\FileException;
 
 class Stream {
 	
-	const FLAG_STREAM_WRITE = 100;
+	const FLAG_STREAM_WRITE = 1;
 	
-	const FLAG_STREAM_READ = 010;
+	const FLAG_STREAM_READ = 2;
 	
-	const FLAG_STREAM_PERM = 001;
+	const FLAG_STREAM_PERM = 4;
+	
+	const FLAG_BASE_VALUE = 0;
 	
 	protected $base = '/sys/class/gpio';
 	
@@ -48,7 +50,7 @@ class Stream {
 	    
 	}
 	
-	public function open($context,$flags = 000) {
+	public function open($context, $flags = self::FLAG_BASE_VALUE) {
 	    
 	    if(!$context) {
 	        
@@ -151,6 +153,30 @@ class Stream {
 	        }
 	        
 	    }
+	    
+	}
+	
+	public function setBase($base) {
+	    
+	    if(!$base) {
+	        
+	        return;
+	        
+	    }
+	    
+	    if(substr($base, -1) == '/') {
+	        
+	        $base = substr($base, 0, -1);
+	        
+	    }
+	    
+	    if(!is_dir($base)) {
+	        
+	        throw new FileException("Cant find new base: ".$base);
+	        
+	    }
+	        
+	    $this->base = $base;
 	    
 	}
 	
