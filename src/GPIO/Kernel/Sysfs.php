@@ -1,13 +1,33 @@
 <?php
+/**
+ * GPIO\Kernel namespace
+ */
 namespace GPIO\Kernel;
 
 use GPIO\Exception\KernelException;
 use GPIO\File\Stream;
 use GPIO\Interrupt\Provider as InterruptProvider;
 
+/**
+ * Contains the main gpio functions,
+ * in a static and simple way.
+ * Entends the chip functions.
+ * 
+ * Uses mainly the File Stream
+ * class.
+ * 
+ * @author raah
+ * @link https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
+ */
 class Sysfs extends Chip
 {
 
+    /**
+     * Write the $port to
+     * the export file.
+     * 
+     * @param int $port
+     */
     static public function export($port)
     {
         if (! $port) {
@@ -20,6 +40,12 @@ class Sysfs extends Chip
         $stream->write($port, true);
     }
 
+    /**
+     * Write the $port to
+     * the unexport file.
+     * 
+     * @param int $port
+     */
     static public function unexport($port)
     {
         if (! $port) {
@@ -32,6 +58,16 @@ class Sysfs extends Chip
         $stream->write($port, true);
     }
 
+    /**
+     * Sets the direction of the
+     * gpio $port.
+     * Allowed arguments -> in|out
+     * 
+     * @param int $port
+     * @param string $value
+     * @throws KernelException
+     * @return void|string
+     */
     static public function direction($port, $value)
     {
         if (! $port) {
@@ -39,11 +75,35 @@ class Sysfs extends Chip
             return;
         }
         
-        $stream = new Stream('gpio' . $port . '/direction', Stream::FLAG_STREAM_WRITE);
+        if($value && $value != 'in' && $value != 'out') {
+            
+            throw new KernelException("Unexpected direction! Try in/out.");
+            
+        }
         
-        $stream->write($value, true);
+        if ($value) {
+            
+            $stream = new Stream('gpio' . $port . '/direction', Stream::FLAG_STREAM_WRITE);
+            
+            $stream->write($value, true);
+        } else {
+            
+            $stream = new Stream('gpio' . $port . '/direction', Stream::FLAG_STREAM_READ);
+            
+            return $stream->read(true);
+        }
     }
 
+    /**
+     * Write or reads the $value
+     * from the $port. Leave $value
+     * open to read the value.
+     * 
+     * @param int $port
+     * @param int $value
+     * @throws KernelException
+     * @return void|string
+     */
     static public function value($port, $value)
     {
         if (! $port) {
@@ -74,6 +134,15 @@ class Sysfs extends Chip
         }
     }
 
+    /**
+     * 
+     * @param int $port
+     * @param int $value
+     * @param InterruptProvider $interrupt
+     * @param boolean $return
+     * @throws KernelException
+     * @return void|string
+     */
     static public function edge($port, $value, InterruptProvider $interrupt = InterruptProvider, $return = false)
     {
         
@@ -111,7 +180,17 @@ class Sysfs extends Chip
         return $buffer;
     }
 
-    static public function active_low($port)
+    /**
+     * Inverts the current $port signal.
+     * Optional use the $return to get
+     * the value after the invert.
+     * 
+     * @param int $port
+     * @param boolean $return
+     * @throws KernelException
+     * @return void|void|string
+     */
+    static public function active_low($port, $return = false)
     {
         if (! $port) {
             
@@ -138,5 +217,12 @@ class Sysfs extends Chip
         $stream->open('gpio' . $port . '/value', Stream::FLAG_STREAM_WRITE);
         
         $stream->write($value, true);
+        
+        if($return) {
+            
+            return self::value($port);
+            
+        }
+        
     }
 }
