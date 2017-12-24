@@ -1,7 +1,7 @@
 <?php
 namespace GPIO\Exception;
 
-class KernelException extends \Exception
+class InterruptException extends \Exception
 {
 
     protected $messages = [];
