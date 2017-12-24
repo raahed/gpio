@@ -11,11 +11,11 @@ use GPIO\Interrupt\Provider as InterruptProvider;
 /**
  * Contains the main gpio functions,
  * in a static and simple way.
- * Entends the chip functions.
- * 
+ * Extends the chip functions.
+ *
  * Uses mainly the File Stream
  * class.
- * 
+ *
  * @author raah
  * @link https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
  */
@@ -25,7 +25,7 @@ class Sysfs extends Chip
     /**
      * Write the $port to
      * the export file.
-     * 
+     *
      * @param int $port
      */
     static public function export($port)
@@ -43,7 +43,7 @@ class Sysfs extends Chip
     /**
      * Write the $port to
      * the unexport file.
-     * 
+     *
      * @param int $port
      */
     static public function unexport($port)
@@ -61,8 +61,12 @@ class Sysfs extends Chip
     /**
      * Sets the direction of the
      * gpio $port.
+     *
      * Allowed arguments -> in|out
-     * 
+     *
+     * Leaves the $value argument open
+     * to get the current direction.
+     *
      * @param int $port
      * @param string $value
      * @throws KernelException
@@ -75,10 +79,9 @@ class Sysfs extends Chip
             return;
         }
         
-        if($value && $value != 'in' && $value != 'out') {
+        if ($value && $value != 'in' && $value != 'out') {
             
             throw new KernelException("Unexpected direction! Try in/out.");
-            
         }
         
         if ($value) {
@@ -96,9 +99,10 @@ class Sysfs extends Chip
 
     /**
      * Write or reads the $value
-     * from the $port. Leave $value
+     * from the $port.
+     * Leave $value
      * open to read the value.
-     * 
+     *
      * @param int $port
      * @param int $value
      * @throws KernelException
@@ -135,7 +139,7 @@ class Sysfs extends Chip
     }
 
     /**
-     * 
+     *
      * @param int $port
      * @param int $value
      * @param InterruptProvider $interrupt
@@ -184,7 +188,7 @@ class Sysfs extends Chip
      * Inverts the current $port signal.
      * Optional use the $return to get
      * the value after the invert.
-     * 
+     *
      * @param int $port
      * @param boolean $return
      * @throws KernelException
@@ -218,11 +222,9 @@ class Sysfs extends Chip
         
         $stream->write($value, true);
         
-        if($return) {
+        if ($return) {
             
             return self::value($port);
-            
         }
-        
     }
 }
