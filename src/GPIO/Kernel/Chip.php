@@ -5,7 +5,6 @@
 namespace GPIO\Kernel;
 
 use GPIO\File\Stream;
-use GPIO\Exception\FileException;
 use GPIO\Exception\KernelException;
 
 /**
@@ -21,6 +20,15 @@ class Chip
 {
 
     /**
+     * Contains the file stream object.
+     *
+     * @var object GPIO\File\Stream
+     */
+    protected static $stream = null;
+
+    /**
+     * Stores the chip.
+     * Set them with setChip().
      *
      * @var string $chip
      */
@@ -33,8 +41,9 @@ class Chip
      * argument, set the chip.
      *
      * @param string $chip
+     *            Optional: Leave this option open if the chip is already defined.
      * @throws KernelException
-     * @return string
+     * @return int Returns base parameter.
      */
     static public function base($chip)
     {
@@ -48,9 +57,11 @@ class Chip
             throw new KernelException("No chip locate! Use setChip()");
         }
         
-        $stream = new Stream(self::$chip . '/base', Stream::FLAG_STREAM_READ);
+        $stream = self::streamhandler();
         
-        return $stream->read(true);
+        $stream->open(self::$chip . '/base', Stream::FLAG_STREAM_READ);
+        
+        return (int) $stream->read(true);
     }
 
     /**
@@ -60,8 +71,9 @@ class Chip
      * argument, set the chip.
      *
      * @param string $chip
+     *            Optional: Leave this option open if the chip is already defined.
      * @throws KernelException
-     * @return string
+     * @return string Returns the label parameter.
      */
     static public function label($chip)
     {
@@ -75,7 +87,9 @@ class Chip
             throw new KernelException("No chip locate! Use setChip()");
         }
         
-        $stream = new Stream(self::$chip . '/label', Stream::FLAG_STREAM_READ);
+        $stream = self::streamhandler();
+        
+        $stream->open(self::$chip . '/label', Stream::FLAG_STREAM_READ);
         
         return $stream->read(true);
     }
@@ -87,8 +101,9 @@ class Chip
      * argument, set the chip.
      *
      * @param string $chip
+     *            Optional: Leave this option open if the chip is already defined.
      * @throws KernelException
-     * @return string
+     * @return int Returns the ngpio parameter.
      */
     static public function ngpio($chip)
     {
@@ -102,9 +117,11 @@ class Chip
             throw new KernelException("No chip locate! Use setChip()");
         }
         
-        $stream = new Stream(self::$chip . '/ngpio', Stream::FLAG_STREAM_READ);
+        $stream = self::streamhandler();
         
-        return $stream->read(true);
+        $stream->open(self::$chip . '/ngpio', Stream::FLAG_STREAM_READ);
+        
+        return (int) $stream->read(true);
     }
 
     /**
@@ -121,7 +138,8 @@ class Chip
      * Sets the $chip value.
      *
      * @param string $chip
-     * @throws FileException
+     *            Set the chip like "gpiochip0".
+     * @throws KernelException
      */
     static public function setChip($chip)
     {
@@ -130,18 +148,19 @@ class Chip
             return;
         }
         
-        $stream = new Stream();
-        
-        $base = $stream->getBase();
-        
-        $stream->close();
+        /**
+         * Single line stream comment.
+         *
+         * @var Ambiguous $base
+         */
+        $base = self::streamhandler()->getBase();
         
         if (is_dir($base . '/' . $chip)) {
             
             self::$chip = $chip;
         } else {
             
-            throw new FileException("Cant find Chip by: " . $base . '/' . $chip);
+            throw new KernelException("Cant find Chip by: " . $base . '/' . $chip);
         }
     }
 
@@ -151,5 +170,20 @@ class Chip
     static public function unsetChip()
     {
         self::$chip = '';
+    }
+
+    /**
+     * Returns the file stream object.
+     *
+     * @return \GPIO\File\Stream
+     */
+    static protected function streamhandler()
+    {
+        if (! self::$stream) {
+            
+            self::$stream = new Stream();
+        }
+        
+        return self::$stream;
     }
 }

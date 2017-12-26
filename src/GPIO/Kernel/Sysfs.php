@@ -110,7 +110,7 @@ class Sysfs extends Chip
             
             $stream->open('gpio' . $port . '/direction', Stream::FLAG_STREAM_READ);
             
-            return $stream->read(true);
+            return (string) $stream->read(true);
         }
     }
 
@@ -125,7 +125,7 @@ class Sysfs extends Chip
      * @param int $value
      *            Sets the value to 0/1.
      * @throws KernelException
-     * @return void|string Leave the $value open to get a return.
+     * @return void|int Leave the $value open to get a return.
      */
     static public function value($port, $value)
     {
@@ -155,11 +155,12 @@ class Sysfs extends Chip
             
             $stream->open('gpio' . $port . '/value', Stream::FLAG_STREAM_READ);
             
-            return $stream->read(true);
+            return (int) $stream->read(true);
         }
     }
 
     /**
+     *
      * @param int $port
      *            The number of the gpio port.
      * @param int $value
@@ -203,7 +204,7 @@ class Sysfs extends Chip
             $stream->write($value, true);
         }
         
-        return $buffer;
+        return (string) $buffer;
     }
 
     /**
@@ -218,7 +219,7 @@ class Sysfs extends Chip
      * @param boolean $return
      *            In case the function returns the current port value.
      * @throws KernelException
-     * @return void|void|string Use the $return to get a return.
+     * @return void|void|int Use the $return to get a return.
      */
     static public function active_low($port, $value, $return = false)
     {
