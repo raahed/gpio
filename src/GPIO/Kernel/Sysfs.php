@@ -23,10 +23,18 @@ class Sysfs extends Chip
 {
 
     /**
+     * Contains the file stream object.
+     *
+     * @var object GPIO\File\Stream
+     */
+    protected static $stream = null;
+
+    /**
      * Write the $port to
      * the export file.
      *
      * @param int $port
+     *            The number of the gpio port.
      */
     static public function export($port)
     {
@@ -35,7 +43,9 @@ class Sysfs extends Chip
             return;
         }
         
-        $stream = new Stream('export', Stream::FLAG_STREAM_WRITE);
+        $stream = self::streamhandler();
+        
+        $stream->open('export', Stream::FLAG_STREAM_WRITE);
         
         $stream->write($port, true);
     }
@@ -45,6 +55,7 @@ class Sysfs extends Chip
      * the unexport file.
      *
      * @param int $port
+     *            The number of the gpio port.
      */
     static public function unexport($port)
     {
@@ -53,7 +64,9 @@ class Sysfs extends Chip
             return;
         }
         
-        $stream = new Stream('unexport', Stream::FLAG_STREAM_WRITE);
+        $stream = self::streamhandler();
+        
+        $stream->open('unexport', Stream::FLAG_STREAM_WRITE);
         
         $stream->write($port, true);
     }
@@ -68,9 +81,11 @@ class Sysfs extends Chip
      * to get the current direction.
      *
      * @param int $port
+     *            The number of the gpio port.
      * @param string $value
+     *            Sets the direction to in/out.
      * @throws KernelException
-     * @return void|string
+     * @return void|string Returns the direction if $value is empty.
      */
     static public function direction($port, $value)
     {
@@ -84,14 +99,16 @@ class Sysfs extends Chip
             throw new KernelException("Unexpected direction! Try in/out.");
         }
         
+        $stream = self::streamhandler();
+        
         if ($value) {
             
-            $stream = new Stream('gpio' . $port . '/direction', Stream::FLAG_STREAM_WRITE);
+            $stream->open('gpio' . $port . '/direction', Stream::FLAG_STREAM_WRITE);
             
             $stream->write($value, true);
         } else {
             
-            $stream = new Stream('gpio' . $port . '/direction', Stream::FLAG_STREAM_READ);
+            $stream->open('gpio' . $port . '/direction', Stream::FLAG_STREAM_READ);
             
             return $stream->read(true);
         }
@@ -104,9 +121,11 @@ class Sysfs extends Chip
      * open to read the value.
      *
      * @param int $port
+     *            The number of the gpio port.
      * @param int $value
+     *            Sets the value to 0/1.
      * @throws KernelException
-     * @return void|string
+     * @return void|string Leave the $value open to get a return.
      */
     static public function value($port, $value)
     {
@@ -114,6 +133,8 @@ class Sysfs extends Chip
             
             return;
         }
+        
+        $stream = self::streamhandler();
         
         if ($value) {
             
@@ -127,21 +148,22 @@ class Sysfs extends Chip
                 throw new KernelException("Your value must be a boolean! (" . $value . ")");
             }
             
-            $stream = new Stream('gpio' . $port . '/value', Stream::FLAG_STREAM_WRITE);
+            $stream->open('gpio' . $port . '/value', Stream::FLAG_STREAM_WRITE);
             
             $stream->write($value, true);
         } else {
             
-            $stream = new Stream('gpio' . $port . '/value', Stream::FLAG_STREAM_READ);
+            $stream->open('gpio' . $port . '/value', Stream::FLAG_STREAM_READ);
             
             return $stream->read(true);
         }
     }
 
     /**
-     *
      * @param int $port
+     *            The number of the gpio port.
      * @param int $value
+     *            Sets the value to none/both/in/out default is none.
      * @param InterruptProvider $interrupt
      * @param boolean $return
      * @throws KernelException
@@ -163,7 +185,7 @@ class Sysfs extends Chip
             throw new KernelException("Unexpected value type: " . $value);
         }
         
-        $stream = new Stream();
+        $stream = self::streamhandler();
         
         if (! $value || $return == true) {
             
@@ -190,35 +212,24 @@ class Sysfs extends Chip
      * the value after the invert.
      *
      * @param int $port
+     *            The number of the gpio port.
+     * @param int $value
+     *            Sets the active_low (invert) value.
      * @param boolean $return
+     *            In case the function returns the current port value.
      * @throws KernelException
-     * @return void|void|string
+     * @return void|void|string Use the $return to get a return.
      */
-    static public function active_low($port, $return = false)
+    static public function active_low($port, $value, $return = false)
     {
         if (! $port) {
             
             return;
         }
         
-        $stream = new Stream('gpio' . $port . '/value', Stream::FLAG_STREAM_READ);
+        $stream = self::streamhandler();
         
-        /**
-         * Use intval..
-         *
-         * @var Ambiguous $buffer
-         */
-        $buffer = intval($stream->read(true));
-        
-        if ($buffer == 1 || $buffer == 0) {
-            
-            $value = $buffer == 1 ? 0 : 1;
-        } else {
-            
-            throw new KernelException("The gpio returns a non boolean value: " . $buffer);
-        }
-        
-        $stream->open('gpio' . $port . '/value', Stream::FLAG_STREAM_WRITE);
+        $stream->open('gpio' . $port . '/active_low', Stream::FLAG_STREAM_WRITE);
         
         $stream->write($value, true);
         
@@ -226,5 +237,20 @@ class Sysfs extends Chip
             
             return self::value($port);
         }
+    }
+
+    /**
+     * Returns the file stream object.
+     *
+     * @return \GPIO\File\Stream
+     */
+    static protected function streamhandler()
+    {
+        if (! self::$stream) {
+            
+            self::$stream = new Stream();
+        }
+        
+        return self::$stream;
     }
 }
