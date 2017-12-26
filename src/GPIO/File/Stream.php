@@ -1,25 +1,94 @@
 <?php
+/**
+ * GPIO\File namespace
+ */
 namespace GPIO\File;
 
+/**
+ * Namespace imports
+ */
 use GPIO\Exception\FileException;
 
+/**
+ * Use this class to access the gpio files.
+ * This class uses the streamwrapper like fopen.
+ *
+ * @author raah
+ * @see http://php.net/manual/en/class.streamwrapper.php
+ */
 class Stream
 {
 
+    /**
+     * Set this flag to define the stream
+     * as a write-only stream.
+     *
+     * @var integer
+     */
     const FLAG_STREAM_WRITE = 1;
 
+    /**
+     * Set this flag to define the stream
+     * as a read-only stream.
+     *
+     * @var integer
+     */
     const FLAG_STREAM_READ = 2;
 
-    const FLAG_STREAM_PERM = 4;
+    /**
+     * Use this flag to open a context
+     * and block them.
+     *
+     * @var integer
+     */
+    const FLAG_STREAM_BLOCK = 4;
 
-    const FLAG_BASE_VALUE = 0;
+    /**
+     *
+     * @var boolean
+     */
+    private $isblocked = false;
 
+    /**
+     * Stores the mainly gpio file base.
+     * Use setBase() to set it.
+     *
+     * @example $base.'/'.$context
+     *         
+     * @var string
+     */
     protected $base = '/sys/class/gpio';
 
-    protected $mode = '';
+    /**
+     * Contains the stream mode,
+     * currently supported: r/w/w+.
+     * Use the flags to set the mode,
+     * NOTICE: Open a stream without
+     * read/write flag for the w+ mode.
+     *
+     * @var string
+     */
+    private $mode = '';
 
-    protected $stream = null;
+    /**
+     * streamWrapper object.
+     *
+     * @var object \streamWrapper
+     */
+    private $stream = null;
 
+    /**
+     * Constructor.
+     * Call GPIO\File\Stream::open() in
+     * case that the $context is not empty.
+     *
+     * @param string $context
+     *            Set the stream context.
+     *            NOTICE: the default basepath is '/sys/class/gpio'.
+     *            The real filename is $base.'/'.$context!
+     * @param number $flags
+     *            See the class consts, use them optional.
+     */
     public function __construct($context, $flags)
     {
         if ($context) {
@@ -28,14 +97,27 @@ class Stream
         }
     }
 
+    /**
+     * Destructor.
+     * Calls the GPIO\File\Stream::close()
+     * function.
+     */
     public function __destruct()
     {
-        if ($this->stream) {
-            
-            $this->close();
-        }
+        $this->close();
     }
 
+    /**
+     * ToString:
+     * Returns the content from a open stream
+     * object.
+     *
+     * @example "$stream = new Stream($context);
+     *          $value = (string) $stream;"
+     *         
+     * @return string Return the GPIO\File\Stream::read()
+     *         function and closes the stream.
+     */
     public function __toString()
     {
         if ($this->stream) {
@@ -44,7 +126,42 @@ class Stream
         }
     }
 
-    public function open($context, $flags = self::FLAG_BASE_VALUE)
+    /**
+     * DebugInfo:
+     * use the with var_dump to get more informations.
+     *
+     * @return array Some helpful debug informations.
+     */
+    public function __debugInfo()
+    {
+        return [
+            'stream' => $this->stream,
+            'mode' => $this->mode,
+            'base' => $this->base,
+            'isBlocked' => $this->isblocked
+        ];
+    }
+
+    /**
+     * Unuseful magic methods.
+     */
+    public function __clone()
+    {}
+
+    public function __callstatic()
+    {}
+
+    /**
+     *
+     * @param string $context
+     *            Set the stream context.
+     *            NOTICE: the default basepath is '/sys/class/gpio'.
+     *            The real filename is $base.'/'.$context!
+     * @param number $flags
+     *            See the class consts, use them optional.
+     * @throws FileException
+     */
+    public function open($context, $flags = 0)
     {
         if (! $context) {
             
@@ -62,29 +179,38 @@ class Stream
             $this->mode = 'w+';
         }
         
-        if (strpos($context, '/') != 0) {
+        $file = $this->buildFilePath($context);
+        
+        if (! is_readable($file)) {
             
-            $file = $this->base . '/' . $context;
-        } else {
-            
-            $file = $this->base . $context;
+            throw new FileException("Cant access to: " . $file);
         }
         
-        try {
+        /**
+         * include base = flase
+         */
+        $this->stream = fopen($file, $this->mode, false);
+        
+        if ($flags & self::FLAG_STREAM_BLOCK) {
             
-            /**
-             * include base = flase
-             */
-            $this->stream = fopen($file, $this->mode, false);
-        } catch (\Exception $e) {
-            
-            throw new FileException("Open stream context failed: " . $e->getMessage());
+            $this->block();
         }
     }
 
+    /**
+     * This function unblocks the stream
+     * and close them.
+     *
+     * NOTICE: This resets the mode!
+     */
     public function close()
     {
         if ($this->stream) {
+            
+            if ($this->isblocked) {
+                
+                $this->unblock();
+            }
             
             fclose($this->stream);
             
@@ -97,39 +223,131 @@ class Stream
         }
     }
 
+    /**
+     * Gets content from the stream
+     * object.
+     *
+     * @param boolean $close
+     *            Use this to close the stream immidiatly after reading.
+     * @throws FileException
+     * @return void|string Gets stream content.
+     */
     public function read($close = false)
     {
+        if ($this->isblocked) {
+            
+            return;
+        }
+        
         if ($this->stream) {
+            
+            if ($this->mode == 'w') {
+                
+                throw new FileException("Try to write something to a write-only stream.");
+            }
             
             $buffer = fread($this->stream);
             
-            if ($close == true) {
+            if ($close) {
                 
-                $this->close;
+                $this->close();
             }
             
             return $buffer;
         }
     }
 
+    /**
+     * Puts content to the stream
+     * object.
+     *
+     * @param string $content
+     *            Writen this string to the stream.
+     * @param boolean $close
+     *            Use this to close the stream immidiatly after reading.
+     * @throws FileException
+     */
     public function write($content = '', $close = false)
     {
+        if ($this->isblocked) {
+            
+            return;
+        }
+        
         if ($this->stream) {
             
             if ($this->mode == 'r') {
                 
-                throw new \GPIO\Exception\FileException("Try to write something to a read-only stream.");
+                throw new FileException("Try to write something to a read-only stream.");
             }
             
             fwrite($this->stream, $content);
             
-            if ($close == true) {
+            if ($close) {
                 
                 $this->close();
             }
         }
     }
 
+    /**
+     * Block the stream context.
+     *
+     * @see http://php.net/manual/en/function.stream-set-blocking.php
+     */
+    public function block()
+    {
+        if ($this->stream) {
+            
+            stream_set_blocking($this->stream, true);
+            
+            $this->isblocked = true;
+        }
+    }
+
+    /**
+     * Unblocking the stream context.
+     *
+     * @see http://php.net/manual/en/function.stream-set-blocking.php
+     */
+    public function unblock()
+    {
+        if ($this->stream) {
+            
+            stream_set_blocking($this->stream, false);
+            
+            $this->isblocked = false;
+        }
+    }
+
+    /**
+     * Builds the $context filename by
+     * adding the base and path seperators.
+     *
+     * @param string $context
+     *            Stream context without base part.
+     * @return string Returns filename.
+     */
+    protected function buildFilePath($context)
+    {
+        if (strpos($context, '/') != 0) {
+            
+            return $this->base . '/' . $context;
+        } else {
+            
+            return $this->base . $context;
+        }
+    }
+
+    /**
+     * Set a new base.
+     * NOTICE: This do not changes the
+     * base from a open stream object!
+     *
+     * @param string $base
+     *            New base Path like '/home/gpio'.
+     * @throws FileException
+     */
     public function setBase($base)
     {
         if (! $base) {
@@ -150,11 +368,21 @@ class Stream
         $this->base = $base;
     }
 
+    /**
+     * Returns the current base.
+     *
+     * @return string self::$base
+     */
     public function getBase()
     {
         return $this->base;
     }
 
+    /**
+     * Returns the current mode.
+     *
+     * @return string self::$mode
+     */
     public function getMode()
     {
         return $this->mode;
