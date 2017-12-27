@@ -4,9 +4,12 @@
  */
 namespace GPIO\Kernel;
 
+/**
+ * Namespace imports
+ */
 use GPIO\Exception\KernelException;
 use GPIO\File\Stream;
-use GPIO\Interrupt\Provider as InterruptProvider;
+use GPIO\Interrupt\Provider;
 
 /**
  * Contains the main gpio functions,
@@ -17,9 +20,9 @@ use GPIO\Interrupt\Provider as InterruptProvider;
  * class.
  *
  * @author raah
- * @link https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
+ * @see https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
  */
-class Sysfs extends Chip
+class Sysfs
 {
 
     /**
@@ -160,22 +163,25 @@ class Sysfs extends Chip
     }
 
     /**
+     * Returns or set the edge for a port.
+     * Optional, enter a interrupt object and a 
+     * callable for a autolaticly register.
      *
      * @param int $port
      *            The number of the gpio port.
      * @param int $value
      *            Sets the value to none/both/in/out default is none.
-     * @param InterruptProvider $interrupt
+     * @param Provider $interrupt
+     *            Enter a interrupt provider instance to register the port.
+     * @param callable $callable
+     *            If the interrupt provider is set, the register needs a callable.
      * @param boolean $return
+     *            In case the function returns the current port edge.
      * @throws KernelException
-     * @return void|string
+     * @return void|string Use the $return to get a return.
      */
-    static public function edge($port, $value, InterruptProvider $interrupt = InterruptProvider, $return = false)
+    static public function edge($port, $value, Provider $interrupt, callable $callable, $return = false)
     {
-        
-        // TODO: Add Interrupt
-        $buffer;
-        
         if (! $port) {
             
             return;
@@ -186,15 +192,18 @@ class Sysfs extends Chip
             throw new KernelException("Unexpected value type: " . $value);
         }
         
+        if ($interrupt && $callable) {
+            
+            $interrupt->register($port, $callable);
+        }
+        
         $stream = self::streamhandler();
         
         if (! $value || $return == true) {
             
             $stream->open('gpio' . $port . '/edge', Stream::FLAG_STREAM_READ);
             
-            $buffer = $stream->read($value);
-            
-            $stream->close();
+            $buffer = $stream->read($value, true);
         }
         
         if ($value) {

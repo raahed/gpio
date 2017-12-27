@@ -11,10 +11,8 @@ use GPIO\Exception\KernelException;
  * Contains the main gpio functions,
  * in a static and simple way.
  *
- * Extended by the Sysfs!
- *
  * @author raah
- * @link https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
+ * @see https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
  */
 class Chip
 {
