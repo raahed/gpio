@@ -13,7 +13,7 @@ namespace GPIO;
  * your code.
  *
  * @author raah
- * @link http://php.net/manual/en/function.spl-autoload-register.php
+ * @see http://php.net/manual/en/function.spl-autoload-register.php
  */
 class Autoloader
 {

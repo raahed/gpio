@@ -1,7 +1,7 @@
 <?php
 namespace GPIO\Interrupt\Handler;
 
-interface HandlerInterface
+interface HandlersInterface
 {
 
     protected $port;

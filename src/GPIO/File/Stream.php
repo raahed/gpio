@@ -264,7 +264,7 @@ class Stream
      * @param string $content
      *            Writen this string to the stream.
      * @param boolean $close
-     *            Use this to close the stream immidiatly after reading.
+     *            Use this to close the stream immidiatly after writing.
      * @throws FileException
      */
     public function write($content = '', $close = false)
