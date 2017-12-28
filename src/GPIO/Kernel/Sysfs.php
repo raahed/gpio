@@ -148,7 +148,7 @@ class Sysfs
             
             if ($value != 0 && $value != 1) {
                 
-                throw new KernelException("Your value must be a boolean! (" . $value . ")");
+                throw new KernelException("Your value must be a bool 0/1! (" . $value . ")");
             }
             
             $stream->open('gpio' . $port . '/value', Stream::FLAG_STREAM_WRITE);
@@ -164,13 +164,13 @@ class Sysfs
 
     /**
      * Returns or set the edge for a port.
-     * Optional, enter a interrupt object and a 
+     * Optional, enter a interrupt object and a
      * callable for a autolaticly register.
      *
      * @param int $port
      *            The number of the gpio port.
      * @param int $value
-     *            Sets the value to none/both/in/out default is none.
+     *            Sets the value to none/both/rising/falling default is none.
      * @param Provider $interrupt
      *            Enter a interrupt provider instance to register the port.
      * @param callable $callable
@@ -187,7 +187,7 @@ class Sysfs
             return;
         }
         
-        if ($value && $value != 'none' && $value != 'both' && $value != 'in' && $value != 'out') {
+        if ($value && $value != 'none' && $value != 'both' && $value != 'falling' && $value != 'rising') {
             
             throw new KernelException("Unexpected value type: " . $value);
         }

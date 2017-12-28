@@ -4,12 +4,12 @@
  */
 namespace GPIO\System;
 
-/**
+/** 
  * Namespace imports
  */
 use GPIO\Kernel\Chip;
-use GPIO\File\Directory;
 use GPIO\Exception\SystemException;
+use GPIO\File\Stream;
 
 /**
  * Chip helper class.
@@ -89,9 +89,12 @@ class ChipDetail
      */
     public function getChips()
     {
-        $dir = new Directory();
+
+        $stream = new Stream();
         
-        $chips = $dir->get()->pattern('gpiochip*');
+        $dir = $stream->getBase();
+        
+        $chips = preg_match('/gpiochip/', scandir($dir));
         
         if(count($chips) == 0) {
             
