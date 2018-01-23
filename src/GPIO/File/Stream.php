@@ -80,7 +80,7 @@ class Stream
     /**
      * Collect errors in case thats
      * fwrite or fread failed.
-     * 
+     *
      * @var array
      */
     protected $streamerrors = [];
@@ -197,7 +197,10 @@ class Stream
         /**
          * include base = flase
          */
-        $this->stream = fopen($file, $this->mode, false);
+        if (($this->stream = fopen($file, $this->mode, false)) === false) {
+            
+            $this->newStreamError();
+        }
         
         if ($flags & self::FLAG_STREAM_BLOCK) {
             
@@ -220,7 +223,10 @@ class Stream
                 $this->unblock();
             }
             
-            fclose($this->stream);
+            if (fclose($this->stream) === false) {
+                
+                $this->newStreamError();
+            }
             
             if ($this->stream) {
                 
@@ -254,7 +260,7 @@ class Stream
                 throw new FileException("Try to write something to a write-only stream.");
             }
             
-            if ($buffer = fread($this->stream) === false) {
+            if (($buffer = fread($this->stream)) === false) {
                 
                 /**
                  * reads __debugInfo
@@ -359,11 +365,10 @@ class Stream
         }
     }
 
-    
     /**
      * Puts the debug infos
      * in a array.
-     * 
+     *
      * @see \GPIO\File\Stream::__debugInfo()
      */
     protected function newStreamError()
