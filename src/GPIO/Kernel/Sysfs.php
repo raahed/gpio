@@ -14,9 +14,8 @@ use GPIO\Interrupt\Provider;
 /**
  * Contains the main gpio functions,
  * in a static and simple way.
- * Extends the chip functions.
  *
- * Uses mainly the File Stream
+ * Uses mainly the file stream
  * class.
  *
  * @author raah

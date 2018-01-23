@@ -1,49 +1,51 @@
 <?php
 namespace GPIO;
 
-use GPIO\Kernel\Sysfs;
-use GPIO\Kernel\Chip;
-use GPIO\IO\Port;
+use GPIO\System\PinDetail;
 
-class GPIO extends Sysfs
+class GPIO
 {
 
-    const FLAG_GPIO_USE_BUFFER = 001;
+    protected $useablepins = [];
 
-    const FLAG_GPIO_RESET_PORT = 010;
+    protected $usedchips = [];
 
-    const FLAG_GPIO_SKIP_EMPTY = 100;
-
-    protected $ports = [];
-
-    public function __construct()
-    {}
-
-    public function port($pin, $flags)
+    public function __construct($setup = true)
     {
-        if (! $this->ports[$pin]) {
+        if ($setup) {
             
-            $this->ports[$pin] = new Port($pin);
+            $this->setup();
         }
-        
-        return $this->ports[$pin];
     }
 
-    public function crawl($flags)
+    protected function setup()
     {
-        $gpios = Chip::ngpio();
+        $this->updateUseablePins();
         
-        $i = 0;
+        $this->updateChips();
+    }
+
+    public function updateUseablePins()
+    {
+        $system = new PinDetail();
         
-        while ($i ++ >= $gpios) {
-            
-            $callback = $this->port($i);
-            
-            if ($callback) {
-            
-            /**
-             */
-            }
-        }
+        $this->useablepins = $system->getAllPins();
+    }
+
+    public function updateChips()
+    {
+        $system = new PinDetail();
+        
+        $this->usedchips = $system->getChips();
+    }
+
+    public function getUseablePins()
+    {
+        return $this->useablepins;
+    }
+
+    public function getUsedChips()
+    {
+        return $this->usedchips;
     }
 }

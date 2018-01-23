@@ -1,22 +1,23 @@
 {
-	"keywords" : [
+	"keywords": [
 		"gpio",
 		"php"
 	],
-	"autoload" : {
-		"psr-4" : {
+	"autoload": {
+		"psr-4": {
 			"GPIO\\GPIO\\" : "src"
 		}
 	},
-	"name" : "GPIO/GPIO",
-	"description" : "php gpio handler",
-	"require" : {
-		"php" : ">=7.1"
+	"name": "GPIO/GPIO",
+	"description": "php gpio handler",
+	"require": {
+		"php": ">=7.1"
 	},
-	"authors" : [{
-			"name" : "raah",
-			"email" : "fettemarvin@gmail.com",
-			"homepage" : "raah.me"
+	"authors": [
+		{
+			"name": "raah",
+			"email": "fettemarvin@gmail.com",
+			"homepage": "raah.me"
 		}
 	]
 }
