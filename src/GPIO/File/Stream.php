@@ -78,6 +78,14 @@ class Stream
     private $stream = null;
 
     /**
+     * Collect errors in case thats
+     * fwrite or fread failed.
+     * 
+     * @var array
+     */
+    protected $streamerrors = [];
+
+    /**
      * Constructor.
      * Call GPIO\File\Stream::open() in
      * case that the $context is not empty.
@@ -246,7 +254,13 @@ class Stream
                 throw new FileException("Try to write something to a write-only stream.");
             }
             
-            $buffer = fread($this->stream);
+            if ($buffer = fread($this->stream) === false) {
+                
+                /**
+                 * reads __debugInfo
+                 */
+                $this->newStreamError();
+            }
             
             if ($close) {
                 
@@ -281,7 +295,13 @@ class Stream
                 throw new FileException("Try to write something to a read-only stream.");
             }
             
-            fwrite($this->stream, $content);
+            if (fwrite($this->stream, $content) === false) {
+                
+                /**
+                 * reads __debugInfo
+                 */
+                $this->newStreamError();
+            }
             
             if ($close) {
                 
@@ -339,6 +359,18 @@ class Stream
         }
     }
 
+    
+    /**
+     * Puts the debug infos
+     * in a array.
+     * 
+     * @see \GPIO\File\Stream::__debugInfo()
+     */
+    protected function newStreamError()
+    {
+        $this->streamerrors[] = $this->__debugInfo();
+    }
+
     /**
      * Set a new base.
      * NOTICE: This do not changes the
@@ -366,6 +398,26 @@ class Stream
         }
         
         $this->base = $base;
+    }
+
+    /**
+     * Returns the last stream error.
+     *
+     * @return array
+     */
+    public function getLastError()
+    {
+        return $this->streamerrors[max($this->streamerrors)];
+    }
+
+    /**
+     * Returns all stream errors.
+     *
+     * @return array
+     */
+    public function getAllErrors()
+    {
+        return $this->streamerrors;
     }
 
     /**
