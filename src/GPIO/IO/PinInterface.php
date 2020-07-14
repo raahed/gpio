@@ -4,6 +4,10 @@ namespace GPIO\IO;
 interface PinInterface
 {
 
+    /**
+     *
+     * @var integer
+     */
     const VALUE_HIGHT = 1;
 
     const VALUE_LOW = 0;

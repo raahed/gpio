@@ -39,6 +39,9 @@ class GPIO
         $this->usedchips = $system->getChips();
     }
 
+    public function pin($number)
+    {}
+
     public function getUseablePins()
     {
         return $this->useablepins;

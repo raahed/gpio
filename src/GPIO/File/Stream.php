@@ -197,7 +197,7 @@ class Stream
         /**
          * include base = flase
          */
-        if (($this->stream = fopen($file, $this->mode, false)) === false) {
+        if (($this->stream = @fopen($file, $this->mode, false)) === false) {
             
             $this->newStreamError();
         }
